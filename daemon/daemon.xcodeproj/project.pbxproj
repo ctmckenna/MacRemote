@@ -1,0 +1,293 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		978C5B1D16CCCA8100C65EC2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 978C5B1B16CCCA8100C65EC2 /* InfoPlist.strings */; };
+		978C5B1F16CCCA8100C65EC2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 978C5B1E16CCCA8100C65EC2 /* main.m */; };
+		978C5B2316CCCA8100C65EC2 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 978C5B2116CCCA8100C65EC2 /* Credits.rtf */; };
+		978C5B2F16CCCB8100C65EC2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 978C5B1716CCCA8100C65EC2 /* Foundation.framework */; };
+		978C5B3116CCCBA200C65EC2 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 978C5B3016CCCBA200C65EC2 /* ApplicationServices.framework */; };
+		978C5B3216CCCBB300C65EC2 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 978C5B1516CCCA8100C65EC2 /* AppKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		978C5B0E16CCCA8100C65EC2 /* daemon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = daemon.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		978C5B1216CCCA8100C65EC2 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		978C5B1516CCCA8100C65EC2 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		978C5B1616CCCA8100C65EC2 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		978C5B1716CCCA8100C65EC2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		978C5B1A16CCCA8100C65EC2 /* daemon-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "daemon-Info.plist"; sourceTree = "<group>"; };
+		978C5B1C16CCCA8100C65EC2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		978C5B1E16CCCA8100C65EC2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		978C5B2016CCCA8100C65EC2 /* daemon-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "daemon-Prefix.pch"; sourceTree = "<group>"; };
+		978C5B2216CCCA8100C65EC2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		978C5B3016CCCBA200C65EC2 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		978C5B0B16CCCA8100C65EC2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				978C5B3216CCCBB300C65EC2 /* AppKit.framework in Frameworks */,
+				978C5B3116CCCBA200C65EC2 /* ApplicationServices.framework in Frameworks */,
+				978C5B2F16CCCB8100C65EC2 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		978C5B0316CCCA8100C65EC2 = {
+			isa = PBXGroup;
+			children = (
+				978C5B3016CCCBA200C65EC2 /* ApplicationServices.framework */,
+				978C5B1816CCCA8100C65EC2 /* Server */,
+				978C5B1116CCCA8100C65EC2 /* Frameworks */,
+				978C5B0F16CCCA8100C65EC2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		978C5B0F16CCCA8100C65EC2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				978C5B0E16CCCA8100C65EC2 /* daemon.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		978C5B1116CCCA8100C65EC2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				978C5B1216CCCA8100C65EC2 /* Cocoa.framework */,
+				978C5B1416CCCA8100C65EC2 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		978C5B1416CCCA8100C65EC2 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				978C5B1516CCCA8100C65EC2 /* AppKit.framework */,
+				978C5B1616CCCA8100C65EC2 /* CoreData.framework */,
+				978C5B1716CCCA8100C65EC2 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		978C5B1816CCCA8100C65EC2 /* Server */ = {
+			isa = PBXGroup;
+			children = (
+				978C5B1916CCCA8100C65EC2 /* Supporting Files */,
+			);
+			path = Server;
+			sourceTree = "<group>";
+		};
+		978C5B1916CCCA8100C65EC2 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				978C5B1A16CCCA8100C65EC2 /* daemon-Info.plist */,
+				978C5B1B16CCCA8100C65EC2 /* InfoPlist.strings */,
+				978C5B1E16CCCA8100C65EC2 /* main.m */,
+				978C5B2016CCCA8100C65EC2 /* daemon-Prefix.pch */,
+				978C5B2116CCCA8100C65EC2 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		978C5B0D16CCCA8100C65EC2 /* daemon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 978C5B2C16CCCA8200C65EC2 /* Build configuration list for PBXNativeTarget "daemon" */;
+			buildPhases = (
+				978C5B0A16CCCA8100C65EC2 /* Sources */,
+				978C5B0B16CCCA8100C65EC2 /* Frameworks */,
+				978C5B0C16CCCA8100C65EC2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = daemon;
+			productName = Server;
+			productReference = 978C5B0E16CCCA8100C65EC2 /* daemon.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		978C5B0516CCCA8100C65EC2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0450;
+				ORGANIZATIONNAME = connormckenna;
+			};
+			buildConfigurationList = 978C5B0816CCCA8100C65EC2 /* Build configuration list for PBXProject "daemon" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 978C5B0316CCCA8100C65EC2;
+			productRefGroup = 978C5B0F16CCCA8100C65EC2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				978C5B0D16CCCA8100C65EC2 /* daemon */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		978C5B0C16CCCA8100C65EC2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				978C5B1D16CCCA8100C65EC2 /* InfoPlist.strings in Resources */,
+				978C5B2316CCCA8100C65EC2 /* Credits.rtf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		978C5B0A16CCCA8100C65EC2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				978C5B1F16CCCA8100C65EC2 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		978C5B1B16CCCA8100C65EC2 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				978C5B1C16CCCA8100C65EC2 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		978C5B2116CCCA8100C65EC2 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				978C5B2216CCCA8100C65EC2 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		978C5B2A16CCCA8200C65EC2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		978C5B2B16CCCA8200C65EC2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		978C5B2D16CCCA8200C65EC2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Server/daemon-Prefix.pch";
+				INFOPLIST_FILE = "Server/daemon-Info.plist";
+				PRODUCT_NAME = daemon;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		978C5B2E16CCCA8200C65EC2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Server/daemon-Prefix.pch";
+				INFOPLIST_FILE = "Server/daemon-Info.plist";
+				PRODUCT_NAME = daemon;
+				SKIP_INSTALL = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		978C5B0816CCCA8100C65EC2 /* Build configuration list for PBXProject "daemon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				978C5B2A16CCCA8200C65EC2 /* Debug */,
+				978C5B2B16CCCA8200C65EC2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		978C5B2C16CCCA8200C65EC2 /* Build configuration list for PBXNativeTarget "daemon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				978C5B2D16CCCA8200C65EC2 /* Debug */,
+				978C5B2E16CCCA8200C65EC2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 978C5B0516CCCA8100C65EC2 /* Project object */;
+}
