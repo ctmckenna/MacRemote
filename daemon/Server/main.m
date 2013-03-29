@@ -82,21 +82,21 @@ void speed_to_scale(float speed, float *scale)
  *dist = new_dist;
  }*/
 
-int scale_delta(float *d_x, float *d_y)
+int scale_delta(float *d_x, float *d_y, uint32_t ts)
 {
     /* milliseconds since 1970 */
     static uint32_t last_time = 0;
     static float max_distance = 0;
     float scale;
-    struct timeval tv;
-    if (0 > gettimeofday(&tv, NULL))
-        return -1;
-    uint32_t millis = (uint32_t)tv.tv_sec * 1000 + tv.tv_usec/1000;
+   // struct timeval tv;
+   // if (0 > gettimeofday(&tv, NULL))
+   //     return -1;
+   // uint32_t millis = (uint32_t)tv.tv_sec * 1000 + tv.tv_usec/1000;
     if (0 == last_time) {
-        last_time = millis;
+        last_time = ts;
         return -1;
     }
-    uint32_t d_time = millis - last_time;
+    uint32_t d_time = ts - last_time;
     //printf("t: %u\n", d_time);
     if (0 == d_time)
         return -1;
@@ -112,11 +112,11 @@ int scale_delta(float *d_x, float *d_y)
     //printf("speed: %f time: %u x: %f y: %f\n", speed, d_time, *d_x, *d_y);
     //float speed = dist / d_time;
     speed_to_scale(speed, &scale);
-    last_time = millis;
+    last_time = ts;
     
-    // printf("new delta: x: %f y: %f\n", *d_x, *d_y);
     *d_x = *d_x * scale;
     *d_y = *d_y * scale;
+    //printf("new delta: x: %f y: %f\n", *d_x, *d_y);
     return 0;
 }
 
@@ -174,9 +174,9 @@ void validatePt(CGPoint from, CGPoint to, CGPoint *validPt)
         validPt->y = to.y;
 }
 
-int getNewPoint(float x, float y, CGPoint *newPt)
+int getNewPoint(float x, float y, CGPoint *newPt, uint32_t ts)
 {
-    if (0 > scale_delta(&x, &y))
+    if (0 > scale_delta(&x, &y, ts))
         return -1;
     //get_scaling(&scale, x, y);
     CGPoint pt;
@@ -194,23 +194,23 @@ void getCurPoint(CGPoint *pt) {
     pt->y = height - curPt.y;
 }
 
-void mouseMove(float x, float y)
+void mouseMove(float x, float y, uint32_t ts)
 {
     CGPoint newPt;
-    if (0 > getNewPoint(x, y, &newPt))
+    if (0 > getNewPoint(x, y, &newPt, ts))
         return;
     CGEventRef ev = CGEventCreateMouseEvent(NULL, kCGEventMouseMoved, newPt, kCGMouseButtonLeft);
     CGEventPost(kCGHIDEventTap, ev);
     CFRelease(ev);
 }
 
-void mouseDrag(float x, float y, bool is_dragging)
+void mouseDrag(float x, float y, bool is_dragging, uint32_t ts)
 {
     CGPoint oldPt;
     CGPoint newPt;
     
     getCurPoint(&oldPt);
-    if (0 > getNewPoint(x, y, &newPt))
+    if (0 > getNewPoint(x, y, &newPt, ts))
         return;
     CGEventRef ev = NULL;
     
@@ -255,6 +255,7 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
     int y_i;
     float x;
     float y;
+    uint32_t timestamp;
     char ping_msg[255];
     static char secret_code[255];
     static bool is_dragging = false;
@@ -275,20 +276,22 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
                 mouseClick();
                 break;
             case move:
-                if (buf_len < 9)continue;
+                if (buf_len < 13)continue;
                 x_i = (int)ntohl(*(uint32_t *)(buffer+1));
                 y_i = (int)ntohl(*(uint32_t *)(buffer+5));
+                timestamp = (uint32_t)ntohl(*(uint32_t *)(buffer + 9));
                 x = (float)x_i / 1000.0;
                 y =  (float)y_i / 1000.0;
-                mouseMove(x, y);
+                mouseMove(x, y, timestamp);
                 break;
             case drag:
-                if (buf_len < 9) continue;
+                if (buf_len < 13) continue;
                 x_i = (int)ntohl(*(uint32_t *)(buffer+1));
                 y_i = (int)ntohl(*(uint32_t *)(buffer+5));
+                timestamp = (uint32_t)ntohl(*(uint32_t *)(buffer + 9));
                 x = (float)x_i / 1000.0;
                 y =  (float)y_i / 1000.0;
-                mouseDrag(x, y, is_dragging);
+                mouseDrag(x, y, is_dragging, timestamp);
                 is_dragging = true;
                 break;
             case up:
@@ -298,10 +301,10 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
             case ping:
                 strncpy(ping_msg, buffer+1, rec_len-1);
                 memset(ping_msg+rec_len-1, '\0', 1);
-                if (0 == strcmp(ping_msg, secret_code)) {
+                //if (0 == strcmp(ping_msg, secret_code)) {
                     sa.sin_port = htons(port+1);
                     sendto(sockfd, ping_resp, ping_resp_len, 0, (struct sockaddr *)&sa, socklen);
-                }
+                //}
                 break;
             case code:
                 stopped = false;
