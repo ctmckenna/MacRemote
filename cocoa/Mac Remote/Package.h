@@ -16,8 +16,9 @@
 - (Package *)initWithName:(NSString *)packageName;
 + (Package *)helperPackage;
 + (Package *)daemonPackage;
++ (NSString *)getPathInHome:(NSString *)path;
 
-- (void)install;
+- (void)install:(NSMutableDictionary *)substituteDict;
 - (void)start;
 - (void)stop;
 @end

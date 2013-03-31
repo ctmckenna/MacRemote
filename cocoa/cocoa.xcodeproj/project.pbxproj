@@ -13,6 +13,7 @@
 		97AE7AD216EC052300FFA036 /* com.foggy-city.daemon.plist in Resources */ = {isa = PBXBuildFile; fileRef = 97AE7AD116EC052300FFA036 /* com.foggy-city.daemon.plist */; };
 		97CAB65C16EEF3A2008D0CBC /* daemon.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 97CAB65B16EEF37C008D0CBC /* daemon.app */; };
 		97CAB69B1706C9B8008D0CBC /* Package.m in Sources */ = {isa = PBXBuildFile; fileRef = 97CAB69A1706C9B8008D0CBC /* Package.m */; };
+		97CAB6A91707FAF3008D0CBC /* StringUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 97CAB6A81707FAF2008D0CBC /* StringUtil.m */; };
 		97CB393516E5DFDE00CB396A /* icon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 97CB393416E5DFDE00CB396A /* icon.iconset */; };
 		97E6947316BEF50A00A5843C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97E6947216BEF50A00A5843C /* Cocoa.framework */; };
 		97E6947D16BEF50A00A5843C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 97E6947B16BEF50A00A5843C /* InfoPlist.strings */; };
@@ -54,6 +55,8 @@
 		97CAB65216EEF37C008D0CBC /* daemon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = daemon.xcodeproj; path = ../daemon/daemon.xcodeproj; sourceTree = "<group>"; };
 		97CAB6991706C9B8008D0CBC /* Package.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Package.h; sourceTree = "<group>"; };
 		97CAB69A1706C9B8008D0CBC /* Package.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Package.m; sourceTree = "<group>"; };
+		97CAB6A71707FAF2008D0CBC /* StringUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringUtil.h; sourceTree = "<group>"; };
+		97CAB6A81707FAF2008D0CBC /* StringUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StringUtil.m; sourceTree = "<group>"; };
 		97CB393416E5DFDE00CB396A /* icon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = icon.iconset; sourceTree = "<group>"; };
 		97E6946E16BEF50A00A5843C /* Mac Remote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mac Remote.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		97E6947216BEF50A00A5843C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -147,6 +150,8 @@
 				97A5F44B16E87E7E00C7600B /* Installer.m */,
 				97CAB6991706C9B8008D0CBC /* Package.h */,
 				97CAB69A1706C9B8008D0CBC /* Package.m */,
+				97CAB6A71707FAF2008D0CBC /* StringUtil.h */,
+				97CAB6A81707FAF2008D0CBC /* StringUtil.m */,
 			);
 			path = "Mac Remote";
 			sourceTree = "<group>";
@@ -251,6 +256,7 @@
 				97E6949116BF00DF00A5843C /* ServerInterface.m in Sources */,
 				97A5F44C16E87E7E00C7600B /* Installer.m in Sources */,
 				97CAB69B1706C9B8008D0CBC /* Package.m in Sources */,
+				97CAB6A91707FAF3008D0CBC /* StringUtil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

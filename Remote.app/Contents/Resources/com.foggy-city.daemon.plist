@@ -6,7 +6,8 @@
 	<string>com.foggy-city.daemon</string>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/Users/cmckenna/Library/Application Support/RemoteServer/Contents/MacOS/daemon</string>
+		<string>{home}/Library/Application Support/RemoteServer/daemon.app/Contents/MacOS/daemon</string>
+        <string>{passcode}</string>
 	</array>
 	<key>KeepAlive</key>
 	<true/>

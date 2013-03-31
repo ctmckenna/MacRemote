@@ -10,5 +10,5 @@
 
 @interface Installer : NSObject
 + (void)installHelper;
-+ (void)installDaemon;
++ (void)installDaemon:(NSString *)passcode :(BOOL)override;
 @end

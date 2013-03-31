@@ -20,8 +20,7 @@ static const int port = 10265;
 static const char *ping_resp = ":-)";
 static const size_t ping_resp_len = 3;
 
-static const char *code_set_resp = "yes";
-static const size_t code_set_resp_len = 3;
+static const char *passcode = "";
 
 /*
  void PostMouseEvent(CGMouseButton button, CGEventType type, const CGPoint point) {
@@ -257,7 +256,6 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
     float y;
     uint32_t timestamp;
     char ping_msg[255];
-    static char secret_code[255];
     static bool is_dragging = false;
     static bool stopped = false;
     while (true) {
@@ -301,17 +299,12 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
             case ping:
                 strncpy(ping_msg, buffer+1, rec_len-1);
                 memset(ping_msg+rec_len-1, '\0', 1);
-                //if (0 == strcmp(ping_msg, secret_code)) {
+                if (rec_len - 1 != strlen(passcode))
+                    break;
+                if (0 == memcmp(buffer + 1, passcode, rec_len - 1)) {
                     sa.sin_port = htons(port+1);
                     sendto(sockfd, ping_resp, ping_resp_len, 0, (struct sockaddr *)&sa, socklen);
-                //}
-                break;
-            case code:
-                stopped = false;
-                strncpy(secret_code, buffer+1, rec_len-1);
-                memset(secret_code + rec_len - 1, '\0', 1);
-                sa.sin_port = htons(port+1);
-                sendto(sockfd, code_set_resp, code_set_resp_len, 0, (struct sockaddr *)&sa, socklen);
+                }
                 break;
             case stop:
                 stopped = true;
@@ -325,10 +318,12 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
 
 int main(int argc, const char * argv[])
 {
-    
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     height = [[[NSScreen screens] objectAtIndex:0] frame].size.height;
     width = [[[NSScreen screens] objectAtIndex:0] frame].size.width;
+    if (argc == 2) {
+        passcode = argv[1];
+    }
     struct sockaddr_in sa;
     memset(&sa, 0, sizeof(sa));
     sa.sin_family = AF_INET;

@@ -7,12 +7,12 @@
 //
 
 #import "Package.h"
+#import "StringUtil.h"
 
 @implementation Package
 
 NSString *startupDirectory = @"Library/LaunchAgents/";
 NSString *appDirectory = @"Library/Application Support/RemoteServer/";
-
 
 + (NSString *)getPathInHome:(NSString *)path {
     NSString *home = [[[NSProcessInfo processInfo] environment] objectForKey:@"HOME"];
@@ -26,8 +26,8 @@ NSString *appDirectory = @"Library/Application Support/RemoteServer/";
 
 
 + (int)copy:(NSString *)src :(NSString *)dst {
-    NSError *error;
     NSFileManager *defaultManager = [NSFileManager defaultManager];
+    NSError *error;
     if (![defaultManager createDirectoryAtPath:[dst stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:&error])
         return NSLog(@"%@", [error localizedDescription]), -1;
     [defaultManager removeItemAtPath:dst error:nil];
@@ -95,9 +95,19 @@ NSString *appDirectory = @"Library/Application Support/RemoteServer/";
     return [Package runCommand:[NSString stringWithFormat:@"/bin/launchctl load %@", startupFileLocation]];
 }
 
-- (int)installStartup {
+- (int)installStartup:(NSMutableDictionary *)substituteDict {
     NSString *startupFile = [Package startupFilename:packageName];
     NSString *src = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:startupFile];
+    if (substituteDict != nil) {
+        NSError *error;
+        NSString *fileContents = [NSString stringWithContentsOfFile:src encoding:NSASCIIStringEncoding error:&error];
+        if (fileContents == nil)
+            return NSLog(@"%@", [error localizedDescription]), -1;
+        fileContents = [StringUtil substitute:fileContents :substituteDict];
+        if (![fileContents writeToFile:src atomically:YES encoding:NSASCIIStringEncoding error:&error]) {
+            return NSLog(@"%@", [error localizedDescription]), -1;
+        }
+    }
     NSString *dst = [[Package getPathInHome:startupDirectory] stringByAppendingPathComponent:startupFile];
     return [Package copy:src :dst];
 }
@@ -107,14 +117,14 @@ NSString *appDirectory = @"Library/Application Support/RemoteServer/";
     [[NSFileManager defaultManager] removeItemAtPath:startupFileLocation error:nil];
 }
 
-- (void)install {
+- (void)install:(NSMutableDictionary *)substituteDict {
     [self installExecutable];
-    [self installStartup];
+    [self installStartup:substituteDict];
 }
 
 - (void)start {
     [self stopStartup];
-    [self installStartup];
+    [self installStartup:nil];
     [self startStartup];
 }
 

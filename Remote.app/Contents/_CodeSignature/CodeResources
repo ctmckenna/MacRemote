@@ -4,9 +4,9 @@
 <dict>
 	<key>files</key>
 	<dict>
-		<key>Resources/com.foggy-city.remote.plist</key>
+		<key>Resources/com.foggy-city.daemon.plist</key>
 		<data>
-		ahYjOAlrLpbpVHiqU72ha/HanVk=
+		RwDaAIJkS7Q3m2nw0vMmPYTJvqo=
 		</data>
 		<key>Resources/daemon.app/Contents/Info.plist</key>
 		<data>
@@ -14,7 +14,7 @@
 		</data>
 		<key>Resources/daemon.app/Contents/MacOS/daemon</key>
 		<data>
-		Q7sKqvFbG+wGgzpik95NSc5gM/o=
+		3cbpP571QpKjILiBywoLgwLcm0w=
 		</data>
 		<key>Resources/daemon.app/Contents/PkgInfo</key>
 		<data>
