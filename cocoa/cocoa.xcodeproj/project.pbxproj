@@ -10,8 +10,9 @@
 		978C5B4A16CCD6ED00C65EC2 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 978C5B4916CCD6ED00C65EC2 /* ServiceManagement.framework */; };
 		978C5B5A16CE188A00C65EC2 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97E6947516BEF50A00A5843C /* AppKit.framework */; };
 		97A5F44C16E87E7E00C7600B /* Installer.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A5F44B16E87E7E00C7600B /* Installer.m */; };
-		97AE7AD216EC052300FFA036 /* com.foggy-city.remote.plist in Resources */ = {isa = PBXBuildFile; fileRef = 97AE7AD116EC052300FFA036 /* com.foggy-city.remote.plist */; };
+		97AE7AD216EC052300FFA036 /* com.foggy-city.daemon.plist in Resources */ = {isa = PBXBuildFile; fileRef = 97AE7AD116EC052300FFA036 /* com.foggy-city.daemon.plist */; };
 		97CAB65C16EEF3A2008D0CBC /* daemon.app in CopyFiles */ = {isa = PBXBuildFile; fileRef = 97CAB65B16EEF37C008D0CBC /* daemon.app */; };
+		97CAB69B1706C9B8008D0CBC /* Package.m in Sources */ = {isa = PBXBuildFile; fileRef = 97CAB69A1706C9B8008D0CBC /* Package.m */; };
 		97CB393516E5DFDE00CB396A /* icon.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 97CB393416E5DFDE00CB396A /* icon.iconset */; };
 		97E6947316BEF50A00A5843C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97E6947216BEF50A00A5843C /* Cocoa.framework */; };
 		97E6947D16BEF50A00A5843C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 97E6947B16BEF50A00A5843C /* InfoPlist.strings */; };
@@ -49,8 +50,10 @@
 		978C5B4916CCD6ED00C65EC2 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		97A5F44A16E87E7E00C7600B /* Installer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Installer.h; sourceTree = "<group>"; };
 		97A5F44B16E87E7E00C7600B /* Installer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Installer.m; sourceTree = "<group>"; };
-		97AE7AD116EC052300FFA036 /* com.foggy-city.remote.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "com.foggy-city.remote.plist"; sourceTree = "<group>"; };
+		97AE7AD116EC052300FFA036 /* com.foggy-city.daemon.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "com.foggy-city.daemon.plist"; sourceTree = "<group>"; };
 		97CAB65216EEF37C008D0CBC /* daemon.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = daemon.xcodeproj; path = ../daemon/daemon.xcodeproj; sourceTree = "<group>"; };
+		97CAB6991706C9B8008D0CBC /* Package.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Package.h; sourceTree = "<group>"; };
+		97CAB69A1706C9B8008D0CBC /* Package.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Package.m; sourceTree = "<group>"; };
 		97CB393416E5DFDE00CB396A /* icon.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = icon.iconset; sourceTree = "<group>"; };
 		97E6946E16BEF50A00A5843C /* Mac Remote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Mac Remote.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		97E6947216BEF50A00A5843C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -94,7 +97,7 @@
 		97E6946316BEF50900A5843C = {
 			isa = PBXGroup;
 			children = (
-				97AE7AD116EC052300FFA036 /* com.foggy-city.remote.plist */,
+				97AE7AD116EC052300FFA036 /* com.foggy-city.daemon.plist */,
 				97CB393416E5DFDE00CB396A /* icon.iconset */,
 				97CAB65216EEF37C008D0CBC /* daemon.xcodeproj */,
 				978C5B4916CCD6ED00C65EC2 /* ServiceManagement.framework */,
@@ -142,6 +145,8 @@
 				97E6947916BEF50A00A5843C /* Supporting Files */,
 				97A5F44A16E87E7E00C7600B /* Installer.h */,
 				97A5F44B16E87E7E00C7600B /* Installer.m */,
+				97CAB6991706C9B8008D0CBC /* Package.h */,
+				97CAB69A1706C9B8008D0CBC /* Package.m */,
 			);
 			path = "Mac Remote";
 			sourceTree = "<group>";
@@ -230,7 +235,7 @@
 				97E6948316BEF50A00A5843C /* Credits.rtf in Resources */,
 				97E6948916BEF50C00A5843C /* MainMenu.xib in Resources */,
 				97CB393516E5DFDE00CB396A /* icon.iconset in Resources */,
-				97AE7AD216EC052300FFA036 /* com.foggy-city.remote.plist in Resources */,
+				97AE7AD216EC052300FFA036 /* com.foggy-city.daemon.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -245,6 +250,7 @@
 				97E6948616BEF50A00A5843C /* AppDelegate.m in Sources */,
 				97E6949116BF00DF00A5843C /* ServerInterface.m in Sources */,
 				97A5F44C16E87E7E00C7600B /* Installer.m in Sources */,
+				97CAB69B1706C9B8008D0CBC /* Package.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -26,9 +26,13 @@ static AppDelegate *instance = NULL;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     instance = self;
-    [Installer installDaemon];
     NSString *mobileCode = [ServerInterface getPasscode];
     [self.passcode setStringValue:mobileCode];
+    
+    //we don't have a helper yet
+    //[Installer installHelper];
+    [Installer installDaemon];
+    
     [ServerInterface getServerStatus];
     [self.serverStateButton setTransparent:YES];
     
@@ -52,11 +56,11 @@ static AppDelegate *instance = NULL;
 
 - (IBAction)serverStateChange:(NSButton *)sender {
     if ([sender.title isEqualToString:startServerText]) {
-        if ([ServerInterface startServer])
-            [self setRunning];
+        [ServerInterface startServer];
+        [self setRunning];
     } else if ([sender.title isEqualToString:stopServerText]) {
-        if ([ServerInterface stopServer])
-            [self setStopped];
+        [ServerInterface stopServer];
+        [self setStopped];
     }
 }
 @end

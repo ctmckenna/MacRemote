@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface Installer : NSObject
-
-+(void)installDaemon;
-+(NSString *)pathToLaunchConfigFile;
++ (void)installHelper;
++ (void)installDaemon;
 @end

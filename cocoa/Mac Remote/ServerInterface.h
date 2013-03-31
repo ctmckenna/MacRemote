@@ -10,7 +10,7 @@
 
 @interface ServerInterface : NSObject
 + (void)getServerStatus;
-+ (BOOL)startServer;
-+ (BOOL)stopServer;
++ (void)startServer;
++ (void)stopServer;
 + (NSString *)getPasscode;
 @end

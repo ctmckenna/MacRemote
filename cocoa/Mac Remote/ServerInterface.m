@@ -13,6 +13,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #import "AppDelegate.h"
+#import "Package.h"
 
 @implementation ServerInterface
 static NSString *serverRunningKey = @"serverRunningKey";
@@ -27,8 +28,6 @@ static bool alive = NO;
 static bool listening = false;
 
 static const int SERVER_PORT = 10265;
-
-static NSTimer *passcodeSetTimer = NULL;
 
 //for reference, these are events accepted by helper app
 typedef enum event {
@@ -49,41 +48,12 @@ typedef enum event {
     [NSTimer scheduledTimerWithTimeInterval:1 target:[ServerInterface class] selector:@selector(pingTimer:) userInfo:NULL repeats:YES];
 }
 
-+ (void)setServerPasscode {
-    if (passcodeSetTimer != NULL)
-        [passcodeSetTimer invalidate];
-    passcodeSet = NO;
-    [ServerInterface startListening];
-    const char *passcode = [[ServerInterface getPasscode] cStringUsingEncoding:NSASCIIStringEncoding];
-    [ServerInterface sendEvent:code :passcode];
-    passcodeSetTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:[ServerInterface class] selector:@selector(passcodeSetTimer:) userInfo:NULL repeats:YES];
++ (void)startServer {
+    [[Package daemonPackage] start];
 }
 
-+ (void)passcodeSetTimer:(NSTimer *)theTimer  {
-    if (passcodeSet) {
-        [theTimer invalidate];
-    } else {
-        const char *passcode = [[ServerInterface getPasscode] cStringUsingEncoding:NSASCIIStringEncoding];
-        [ServerInterface sendEvent:code :passcode];
-    }
-        
-}
-
-+ (BOOL)startServer {
-    //if (!SMLoginItemSetEnabled(serverBundleId, true))
-    //    return FALSE;
-    
-    [ServerInterface setServerPasscode];
-    return TRUE;
-}
-
-+ (BOOL)stopServer {
-    //if (!SMLoginItemSetEnabled(serverBundleId, false))
-    //    return FALSE;
-    if (passcodeSetTimer != NULL)
-        [passcodeSetTimer invalidate];
-    [ServerInterface sendEvent:stop :""];
-    return TRUE;
++ (void)stopServer {
+    [[Package daemonPackage] stop];
 }
 
 + (void)pingTimer:(NSTimer *)theTimer {
