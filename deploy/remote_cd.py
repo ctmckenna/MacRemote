@@ -52,8 +52,8 @@ class Cocoa(deploy.CD):
     def _incr_version(self):
         version = self._run_and_log("ssh foggyciti@foggyciti.com 'cat %s'" % (remote_version))
         if len(version) == 0:
-            version = 0
-        self._run_and_log("ssh foggyciti@foggyciti.com 'echo %s > %s'" % (version, remote_version))
+            version = "0"
+        self._run_and_log("ssh foggyciti@foggyciti.com 'echo %d > %s'" % (int(version) + 1, remote_version))
 
     def _deploy(self):
         self._deploy_dmg()
