@@ -18,24 +18,30 @@
     BOOL installed = [defaults boolForKey:key];
     if (installed)
         return;
+    
     Package *helper = [Package helperPackage];
-    [helper install:nil];
+    NSMutableDictionary *smacroDict = [[NSMutableDictionary alloc] initWithCapacity:5];
+    [smacroDict setObject:[Package getPathInHome:nil] forKey:@"home"];
+    [helper install:smacroDict];
     [helper start];
+    
     [defaults setBool:YES forKey:key];
     [defaults synchronize];
 }
 
-+ (void)installDaemon:(NSString *)passcode :(BOOL)override {
++ (void)installDaemon:(NSString *)passcode {
     NSString *key = @"daemonInstalled";
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    //BOOL installed = [defaults boolForKey:key];
-    //if (installed && !override)
-    //    return;
+    BOOL installed = [defaults boolForKey:key];
+    if (installed)
+        return;
+    
     Package *daemon = [Package daemonPackage];
     NSMutableDictionary *smacroDict = [[NSMutableDictionary alloc] initWithCapacity:5];
     [smacroDict setObject:passcode forKey:@"passcode"];
     [smacroDict setObject:[Package getPathInHome:nil] forKey:@"home"];
     [daemon install:smacroDict];
+    
     [defaults setBool:YES forKey:key];
     [defaults synchronize];
 }

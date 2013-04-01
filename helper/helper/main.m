@@ -31,19 +31,17 @@ long get_current_version() {
         return -1;
     NSString *version = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
     return [version integerValue];
-    
 }
 
 int main(int argc, char *argv[])
 {
-    (void)argc;
-    (void)argv;
-    
     long last_version = get_last_version();
     long current_version = get_current_version();
     if (current_version <= last_version)
         return 0;
     if (0 > [Updater updateDaemon])
+        return 0;
+    if (0 > [Updater updateHelper])
         return 0;
     set_version(current_version);
     return 0;

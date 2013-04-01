@@ -29,8 +29,8 @@ static AppDelegate *instance = NULL;
     NSString *mobileCode = [ServerInterface getPasscode];
     [self.passcode setStringValue:mobileCode];
     
-    //[Installer installHelper];
-    [Installer installDaemon:mobileCode :NO];
+    [Installer installHelper];
+    [Installer installDaemon:mobileCode];
     
     [ServerInterface getServerStatus];
     [self.serverStateButton setTransparent:YES];

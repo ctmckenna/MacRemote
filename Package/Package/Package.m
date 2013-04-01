@@ -13,7 +13,7 @@
 
 NSString *startupDirectory = @"Library/LaunchAgents/";
 NSString *appDirectory = @"Library/Application Support/RemoteServer/";
-NSString *downloadServer = @"http://foggyciti.com/remote/download";
+NSString *downloadServer = @"http://foggyciti.com/download/";
 
 + (NSString *)getPathInHome:(NSString *)path {
     NSString *home = [[[NSProcessInfo processInfo] environment] objectForKey:@"HOME"];
@@ -65,7 +65,7 @@ NSString *downloadServer = @"http://foggyciti.com/remote/download";
 }
 
 - (NSURL *)exeUrl {
-    return [NSURL URLWithString:[downloadServer stringByAppendingPathComponent:packageName]];
+    return [NSURL URLWithString:[downloadServer stringByAppendingString:packageName]];
 }
 
 - (NSURL *)appUrl {
@@ -90,6 +90,10 @@ NSString *downloadServer = @"http://foggyciti.com/remote/download";
 
 + (int)runCommand:(NSString *)cmd {
     NSArray *arr = [cmd componentsSeparatedByString:@" "];
+    return [Package runCommandWithArgs:arr];
+}
+
++ (int)runCommandWithArgs:(NSArray *)arr {
     NSString *path = [arr objectAtIndex:0];
     NSArray *args = [arr subarrayWithRange:NSMakeRange(1, [arr count]-1)];
     NSTask *task = [[NSTask alloc] init];
@@ -159,11 +163,12 @@ NSString *downloadServer = @"http://foggyciti.com/remote/download";
 - (int)installAppFromServer {
     NSURLResponse *response;
     NSError *error;
-    NSData *data = [NSURLConnection sendSynchronousRequest:[NSURLRequest requestWithURL:[self exeUrl]] returningResponse:&response error:&error];
+    NSData *data = [NSURLConnection sendSynchronousRequest:[NSURLRequest requestWithURL:[self appUrl]] returningResponse:&response error:&error];
     if (data == nil)
         return -1;
     [Package write:data :[self appZippedFileLocation]];
-    if (0 > [Package runCommand:[NSString stringWithFormat:@"/usr/bin/unzip -q -o -d %@ %@", [Package directory:[self appFileLocation]], [self appZippedFileLocation]]])
+    NSArray *args = [NSArray arrayWithObjects:@"/usr/bin/unzip", @"-qo", @"-d", [Package directory:[self appFileLocation]], [self appZippedFileLocation], nil];
+    if (0 > [Package runCommandWithArgs:args])
         return NSLog(@"failed to unzip"), -1;
     if (![[NSFileManager defaultManager] removeItemAtPath:[self appZippedFileLocation] error:&error])
         return NSLog(@"%@", [error localizedDescription]), -1;
@@ -178,6 +183,11 @@ NSString *downloadServer = @"http://foggyciti.com/remote/download";
 - (void)start {
     [self stopStartup];
     [self installStartup:nil];
+    [self startStartup];
+}
+
+- (void)restart {
+    [self stopStartup];
     [self startStartup];
 }
 
