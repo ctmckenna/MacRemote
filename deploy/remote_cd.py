@@ -41,6 +41,8 @@ class Cocoa(deploy.CD):
        self._run_and_log("rm %s.zip" % (filename))
 
     def _deploy_updates(self):
+        cwd = None
+        resd = None
         try:
             cwd = open('.', 'r')
         except IOError as err:
