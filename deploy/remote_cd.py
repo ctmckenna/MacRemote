@@ -41,25 +41,13 @@ class Cocoa(deploy.CD):
        self._run_and_log("rm %s.zip" % (filename))
 
     def _deploy_updates(self):
-        cwd = None
-        resd = None
-        try:
-            cwd = open('.', 'r')
-        except IOError as err:
-            deploy.Logger.log(err)
-            raise deploy.DeployFail()
-        try:
-            resd = open(os.path.join(self._get_project_path(deploy.CD.PROJECT), "Contents/Resources"), 'r')
-        except IOError as err:
-            deploy.Logger.log(err)
-            raise deploy.DeployFail()
+        cwd = os.getcwd()
+        os.chdir(os.path.join(self._get_project_path(deploy.CD.PROJECT), "Contents/Resources"))
 
-        os.fchdir(resd)
         self._zip_to_download("daemon.app")
         self._zip_to_download("helper.app")
-        os.fchdir(cwd)
-        resd.close()
-        cwd.close()
+
+        os.chdir(cwd)
  
     def _incr_version(self):
         version = self._run_and_log("ssh foggyciti@foggyciti.com 'cat %s'" % (remote_version))
