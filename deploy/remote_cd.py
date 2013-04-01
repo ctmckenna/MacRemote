@@ -37,7 +37,7 @@ class Cocoa(deploy.CD):
     def _zip_to_download(self, filename):
        self._run_and_log("zip -q -r %s.zip %s" % (filename, filename))
        self._run_and_log("scp %s.zip foggyciti@foggyciti.com:" % (filename))
-       self._run_and_log("ssh foggyciti@foggyciti.com './trampoline.sh %s.zip" % (filename))
+       self._run_and_log("ssh foggyciti@foggyciti.com './trampoline.sh %s.zip'" % (filename))
        self._run_and_log("rm %s.zip" % (filename))
 
     def _deploy_updates(self):
