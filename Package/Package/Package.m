@@ -13,6 +13,7 @@
 
 NSString *startupDirectory = @"Library/LaunchAgents/";
 NSString *appDirectory = @"Library/Application Support/RemoteServer/";
+NSString *downloadServer = @"http://foggyciti.com/remote/download";
 
 + (NSString *)getPathInHome:(NSString *)path {
     NSString *home = [[[NSProcessInfo processInfo] environment] objectForKey:@"HOME"];
@@ -24,11 +25,10 @@ NSString *appDirectory = @"Library/Application Support/RemoteServer/";
         return home;
 }
 
-
 + (int)copy:(NSString *)src :(NSString *)dst {
     NSFileManager *defaultManager = [NSFileManager defaultManager];
     NSError *error;
-    if (![defaultManager createDirectoryAtPath:[dst stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:&error])
+    if (![defaultManager createDirectoryAtPath:[Package directory:dst] withIntermediateDirectories:YES attributes:nil error:&error])
         return NSLog(@"%@", [error localizedDescription]), -1;
     [defaultManager removeItemAtPath:dst error:nil];
     if (![[NSFileManager defaultManager] copyItemAtPath:src toPath:dst error:&error])
@@ -36,14 +36,56 @@ NSString *appDirectory = @"Library/Application Support/RemoteServer/";
     return 0;
 }
 
-+ (NSString *)startupFilename:(NSString *)packageName {
++ (int)write:(NSData *)src :(NSString *)dst {
+    NSFileManager *defaultManager = [NSFileManager defaultManager];
+    NSError *error;
+    if (![defaultManager createDirectoryAtPath:[Package directory:dst] withIntermediateDirectories:YES attributes:nil error:&error])
+        return NSLog(@"%@", [error localizedDescription]), -1;
+    if (![src writeToFile:dst atomically:YES])
+        return NSLog(@"writing to file failed"), -1;
+    return 0;
+}
+
++ (NSString *)directory:(NSString *)path {
+    return [path stringByDeletingLastPathComponent];
+}
+
+- (NSString *)startupFilename {
     static NSString *prefix = @"com.foggy-city.";
     static NSString *suffix = @".plist";
     return [NSString stringWithFormat:@"%@%@%@", prefix, packageName, suffix];
 }
 
-+ (NSString *)startupFileLocation:(NSString *)packageName {
-    return [[Package getPathInHome:startupDirectory] stringByAppendingPathComponent:[Package startupFilename:packageName]];
+- (NSString *)appFilename {
+    return [packageName stringByAppendingString:@".app"];
+}
+
+- (NSString *)appZippedFilename {
+    return [[self appFilename] stringByAppendingString:@".zip"];
+}
+
+- (NSURL *)exeUrl {
+    return [NSURL URLWithString:[downloadServer stringByAppendingPathComponent:packageName]];
+}
+
+- (NSURL *)appUrl {
+    return [NSURL URLWithString:[downloadServer stringByAppendingPathComponent:[self appZippedFilename]]];
+}
+
+- (NSString *)startupFileLocation {
+    return [[Package getPathInHome:startupDirectory] stringByAppendingPathComponent:[self startupFilename]];
+}
+
+- (NSString *)appFileLocation {
+    return [[Package getPathInHome:appDirectory] stringByAppendingPathComponent:[self appFilename]];
+}
+
+- (NSString *)exeFileLocation {
+    return [[[self appFileLocation] stringByAppendingPathExtension:@"Contents/MacOS"] stringByAppendingPathExtension:packageName];
+}
+
+- (NSString *)appZippedFileLocation {
+    return [[Package getPathInHome:appDirectory] stringByAppendingPathComponent:[self appZippedFilename]];
 }
 
 + (int)runCommand:(NSString *)cmd {
@@ -72,31 +114,28 @@ NSString *appDirectory = @"Library/Application Support/RemoteServer/";
     return self;
 }
 
-- (int)installExecutable {
-    NSString *app = [packageName stringByAppendingString:@".app"];
-    NSString *src = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:app];
-    NSString *dst = [[Package getPathInHome:appDirectory] stringByAppendingPathComponent:app];
+- (int)installApp {
+    NSString *src = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:[self appFilename]];
+    NSString *dst = [self appFileLocation];
     return [Package copy:src :dst];
 }
 
 - (void)uninstallExecutable {
-    NSString *app = [packageName stringByAppendingString:@".app"];
-    NSString *appLocation = [[Package getPathInHome:appDirectory] stringByAppendingPathComponent:app];
-    [[NSFileManager defaultManager] removeItemAtPath:appLocation error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[self appFileLocation] error:nil];
 }
 
 - (int)stopStartup {
-    NSString *startupFileLocation = [Package startupFileLocation:packageName];
+    NSString *startupFileLocation = [self startupFileLocation];
     return [Package runCommand:[NSString stringWithFormat:@"/bin/launchctl unload %@", startupFileLocation]];
 }
 
 - (int)startStartup {
-    NSString *startupFileLocation = [Package startupFileLocation:packageName];
+    NSString *startupFileLocation = [self startupFileLocation];
     return [Package runCommand:[NSString stringWithFormat:@"/bin/launchctl load %@", startupFileLocation]];
 }
 
 - (int)installStartup:(NSMutableDictionary *)substituteDict {
-    NSString *startupFile = [Package startupFilename:packageName];
+    NSString *startupFile = [self startupFilename];
     NSString *src = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:startupFile];
     if (substituteDict != nil) {
         NSError *error;
@@ -113,12 +152,26 @@ NSString *appDirectory = @"Library/Application Support/RemoteServer/";
 }
 
 - (void)uninstallStartup {
-    NSString *startupFileLocation = [Package startupFileLocation:packageName];
+    NSString *startupFileLocation = [self startupFileLocation];
     [[NSFileManager defaultManager] removeItemAtPath:startupFileLocation error:nil];
 }
 
+- (int)installAppFromServer {
+    NSURLResponse *response;
+    NSError *error;
+    NSData *data = [NSURLConnection sendSynchronousRequest:[NSURLRequest requestWithURL:[self exeUrl]] returningResponse:&response error:&error];
+    if (data == nil)
+        return -1;
+    [Package write:data :[self appZippedFileLocation]];
+    if (0 > [Package runCommand:[NSString stringWithFormat:@"/usr/bin/unzip -q -o -d %@ %@", [Package directory:[self appFileLocation]], [self appZippedFileLocation]]])
+        return NSLog(@"failed to unzip"), -1;
+    if (![[NSFileManager defaultManager] removeItemAtPath:[self appZippedFileLocation] error:&error])
+        return NSLog(@"%@", [error localizedDescription]), -1;
+    return 0;
+}
+
 - (void)install:(NSMutableDictionary *)substituteDict {
-    [self installExecutable];
+    [self installApp];
     [self installStartup:substituteDict];
 }
 

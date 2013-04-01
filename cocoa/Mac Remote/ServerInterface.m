@@ -13,7 +13,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #import "AppDelegate.h"
-#import "Package.h"
+#import "Package/Package.h"
 
 @implementation ServerInterface
 static NSString *serverRunningKey = @"serverRunningKey";

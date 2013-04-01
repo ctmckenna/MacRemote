@@ -8,13 +8,17 @@
 		<data>
 		RwDaAIJkS7Q3m2nw0vMmPYTJvqo=
 		</data>
+		<key>Resources/com.foggy-city.helper.plist</key>
+		<data>
+		ilBVXAjDFgSKFz0+GCEVpsdb5PU=
+		</data>
 		<key>Resources/daemon.app/Contents/Info.plist</key>
 		<data>
 		MSjZ3V1J63ICQlxLKjs6b2IroIw=
 		</data>
 		<key>Resources/daemon.app/Contents/MacOS/daemon</key>
 		<data>
-		3cbpP571QpKjILiBywoLgwLcm0w=
+		SpbYs37TgzfLdTohi7xKdqRVoC8=
 		</data>
 		<key>Resources/daemon.app/Contents/PkgInfo</key>
 		<data>
@@ -69,6 +73,40 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>Resources/helper.app/Contents/Info.plist</key>
+		<data>
+		RP+RHauoDjmoAiIqHxXNzM3YKug=
+		</data>
+		<key>Resources/helper.app/Contents/MacOS/helper</key>
+		<data>
+		2K8/n5Bw+xy4WMyUcMPa94AL/W8=
+		</data>
+		<key>Resources/helper.app/Contents/PkgInfo</key>
+		<data>
+		n57qDP4tZfLD1rCS43W0B4LQjzE=
+		</data>
+		<key>Resources/helper.app/Contents/Resources/en.lproj/Credits.rtf</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			YKJIFIsxneJuNkJNJQIcJIjiPOg=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>Resources/helper.app/Contents/Resources/en.lproj/InfoPlist.strings</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			MiLKDDnrUKr4EmuvhS5VQwxHGK8=
+			</data>
+			<key>optional</key>
+			<true/>
+		</dict>
+		<key>Resources/helper.app/Contents/_CodeSignature/CodeResources</key>
+		<data>
+		4/SfZj+HA7FK4NWlyl9BJhhNiMc=
+		</data>
 		<key>Resources/icon.icns</key>
 		<data>
 		baut+5J1hihJH4sFAGjDbgQmdEY=

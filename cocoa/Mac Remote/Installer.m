@@ -8,7 +8,7 @@
 
 #import "Installer.h"
 #include <stdlib.h>
-#import "Package.h"
+#import "Package/Package.h"
 
 @implementation Installer
 

@@ -18,6 +18,7 @@
 + (Package *)daemonPackage;
 + (NSString *)getPathInHome:(NSString *)path;
 
+- (int)installAppFromServer;
 - (void)install:(NSMutableDictionary *)substituteDict;
 - (void)start;
 - (void)stop;
