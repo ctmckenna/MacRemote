@@ -23,10 +23,10 @@ void set_version(long v) {
     [defaults synchronize];
 }
 
-long get_current_version() {
+long get_current_version(long v) {
     NSURLResponse *response;
     NSError *error;
-    NSData *data = [NSURLConnection sendSynchronousRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://foggyciti.com/remote/version"]] returningResponse:&response error:&error];
+    NSData *data = [NSURLConnection sendSynchronousRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[@"http://foggyciti.com/remote/version?vers=" stringByAppendingString:[[NSNumber numberWithLong:v] stringValue]]]] returningResponse:&response error:&error];
     if (data == nil)
         return -1;
     NSString *version = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
@@ -36,7 +36,7 @@ long get_current_version() {
 int main(int argc, char *argv[])
 {
     long last_version = get_last_version();
-    long current_version = get_current_version();
+    long current_version = get_current_version(last_version);
     if (current_version <= last_version)
         return 0;
     if (0 > [Updater updateDaemon])

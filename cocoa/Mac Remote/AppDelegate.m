@@ -16,7 +16,6 @@ static NSString *startServerText = @"Start Server";
 static NSString *stopServerText = @"Stop Server";
 static NSString *pendingText = @"Checking Server";
 
-
 static AppDelegate *instance = NULL;
 
 + (id)getInstance {
