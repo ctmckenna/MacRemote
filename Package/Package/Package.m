@@ -124,7 +124,7 @@ NSString *downloadServer = @"http://foggyciti.com/download/";
     return [Package copy:src :dst];
 }
 
-- (void)uninstallExecutable {
+- (void)uninstallApp {
     [[NSFileManager defaultManager] removeItemAtPath:[self appFileLocation] error:nil];
 }
 
@@ -141,18 +141,20 @@ NSString *downloadServer = @"http://foggyciti.com/download/";
 - (int)installStartup:(NSMutableDictionary *)substituteDict {
     NSString *startupFile = [self startupFilename];
     NSString *src = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:startupFile];
+    NSString *dst = [[Package getPathInHome:startupDirectory] stringByAppendingPathComponent:startupFile];
     if (substituteDict != nil) {
         NSError *error;
         NSString *fileContents = [NSString stringWithContentsOfFile:src encoding:NSASCIIStringEncoding error:&error];
         if (fileContents == nil)
             return NSLog(@"%@", [error localizedDescription]), -1;
         fileContents = [StringUtil substitute:fileContents :substituteDict];
-        if (![fileContents writeToFile:src atomically:YES encoding:NSASCIIStringEncoding error:&error]) {
+        if (![fileContents writeToFile:dst atomically:YES encoding:NSASCIIStringEncoding error:&error]) {
             return NSLog(@"%@", [error localizedDescription]), -1;
         }
+    } else {
+        return [Package copy:src :dst];
     }
-    NSString *dst = [[Package getPathInHome:startupDirectory] stringByAppendingPathComponent:startupFile];
-    return [Package copy:src :dst];
+    return 0;
 }
 
 - (void)uninstallStartup {
@@ -178,6 +180,11 @@ NSString *downloadServer = @"http://foggyciti.com/download/";
 - (void)install:(NSMutableDictionary *)substituteDict {
     [self installApp];
     [self installStartup:substituteDict];
+}
+
+- (void)uninstall {
+    [self uninstallStartup];
+    [self uninstallApp];
 }
 
 - (void)start {

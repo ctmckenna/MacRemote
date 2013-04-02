@@ -235,7 +235,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0450;
-				ORGANIZATIONNAME = connormckenna;
+				ORGANIZATIONNAME = "Foggyciti Software";
 			};
 			buildConfigurationList = 97E6946816BEF50A00A5843C /* Build configuration list for PBXProject "cocoa" */;
 			compatibilityVersion = "Xcode 3.2";

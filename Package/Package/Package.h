@@ -20,6 +20,7 @@
 
 - (int)installAppFromServer;
 - (void)install:(NSMutableDictionary *)substituteDict;
+- (void)uninstall;
 - (void)start;
 - (void)restart;
 - (void)stop;

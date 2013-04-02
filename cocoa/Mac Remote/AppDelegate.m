@@ -16,10 +16,19 @@ static NSString *startServerText = @"Start Server";
 static NSString *stopServerText = @"Stop Server";
 static NSString *pendingText = @"Checking Server";
 
+static NSString *installText = @"Install Server";
+static NSString *uninstallText = @"Uninstall Server";
+
 static AppDelegate *instance = NULL;
 
 + (id)getInstance {
     return instance;
+}
+
+- (BOOL)applicationShouldHandleReopen:(NSApplication *)sender hasVisibleWindows:(BOOL)flag {
+    if (flag == NO)
+        [_window makeKeyAndOrderFront:self];
+    return YES;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -30,6 +39,12 @@ static AppDelegate *instance = NULL;
     
     [Installer installHelper];
     [Installer installDaemon:mobileCode];
+    
+    if ([Installer daemonInstalled] && [Installer helperInstalled]) {
+        [self.installItem setTitle:uninstallText];
+    } else {
+        [self.installItem setTitle:installText];
+    }
     
     [ServerInterface getServerStatus];
     [self.serverStateButton setTransparent:YES];
@@ -54,11 +69,34 @@ static AppDelegate *instance = NULL;
 
 - (IBAction)serverStateChange:(NSButton *)sender {
     if ([sender.title isEqualToString:startServerText]) {
+        [self install];
         [ServerInterface startServer];
         [self setRunning];
     } else if ([sender.title isEqualToString:stopServerText]) {
         [ServerInterface stopServer];
         [self setStopped];
+    }
+}
+
+- (void)install {
+    [Installer installDaemon:[ServerInterface getPasscode]];
+    [Installer installHelper];
+    [self.installItem setTitle:uninstallText];
+}
+
+- (void)uninstall {
+    [Installer uninstallDaemon];
+    [Installer uninstallHelper];
+    [self.installItem setTitle:installText];
+    [self setStopped];
+}
+
+- (IBAction)installItemPressed:(NSMenuItem *)sender {
+    NSString *senderTitle = [sender title];
+    if ([senderTitle isEqualToString:installText]) {
+        [self install];
+    } else if ([senderTitle isEqualToString:uninstallText]) {
+        [self uninstall];
     }
 }
 @end

@@ -10,5 +10,9 @@
 
 @interface Installer : NSObject
 + (void)installHelper;
++ (void)uninstallHelper;
 + (void)installDaemon:(NSString *)passcode;
++ (void)uninstallDaemon;
++ (BOOL)daemonInstalled;
++ (BOOL)helperInstalled;
 @end
