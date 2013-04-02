@@ -41,7 +41,7 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>10.7</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2013 connormckenna. All rights reserved.</string>
+	<string>Copyright © 2013 Foggyciti Software. All rights reserved.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
