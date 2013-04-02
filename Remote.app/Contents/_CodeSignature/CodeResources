@@ -6,7 +6,7 @@
 	<dict>
 		<key>Resources/com.foggy-city.daemon.plist</key>
 		<data>
-		RwDaAIJkS7Q3m2nw0vMmPYTJvqo=
+		BSu83bGQ/8bXXWkF64Ej+hCdP3E=
 		</data>
 		<key>Resources/com.foggy-city.helper.plist</key>
 		<data>
@@ -18,7 +18,7 @@
 		</data>
 		<key>Resources/daemon.app/Contents/MacOS/daemon</key>
 		<data>
-		4IhVYTO1gEDJF0lZfhWhRWIs7r4=
+		nt6Dg5xg5VHxJnoxkfXfzzhBBk4=
 		</data>
 		<key>Resources/daemon.app/Contents/PkgInfo</key>
 		<data>
@@ -79,7 +79,7 @@
 		</data>
 		<key>Resources/helper.app/Contents/MacOS/helper</key>
 		<data>
-		42ise5XclK2W9xlj6YTeroEQl1M=
+		UaQjK/BYx6lFNVptMXF8fzzzxkA=
 		</data>
 		<key>Resources/helper.app/Contents/PkgInfo</key>
 		<data>

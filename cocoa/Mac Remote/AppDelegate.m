@@ -37,9 +37,6 @@ static AppDelegate *instance = NULL;
     NSString *mobileCode = [ServerInterface getPasscode];
     [self.passcode setStringValue:mobileCode];
     
-    [Installer installHelper];
-    [Installer installDaemon:mobileCode];
-    
     if ([Installer daemonInstalled] && [Installer helperInstalled]) {
         [self.installItem setTitle:uninstallText];
     } else {

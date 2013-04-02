@@ -7,7 +7,7 @@
 	<key>ProgramArguments</key>
 	<array>
 		<string>{home}/Library/Application Support/RemoteServer/daemon.app/Contents/MacOS/daemon</string>
-        <string>{passcode}</string>
+		<string>{passcode}</string>
 	</array>
 	<key>KeepAlive</key>
 	<true/>
