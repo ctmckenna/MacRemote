@@ -15,6 +15,7 @@ NSString *startupDirectory = @"Library/LaunchAgents/";
 NSString *appDirectory = @"Library/Application Support/RemoteServer/";
 NSString *downloadServer = @"http://foggyciti.com/download/";
 
+
 + (NSString *)getPathInHome:(NSString *)path {
     NSString *home = [[[NSProcessInfo processInfo] environment] objectForKey:@"HOME"];
     if (home == NULL) //Careful: should create warning message instead
@@ -88,6 +89,16 @@ NSString *downloadServer = @"http://foggyciti.com/download/";
     return [[Package getPathInHome:appDirectory] stringByAppendingPathComponent:[self appZippedFilename]];
 }
 
+- (NSMutableDictionary *)getSmacroDict:(NSString *)passcode {
+    static NSMutableDictionary *smacroDict = NULL;
+    if (smacroDict == NULL) {
+        smacroDict = [[NSMutableDictionary alloc] initWithCapacity:10];
+        [smacroDict setObject:[Package getPathInHome:nil] forKey:@"home"];
+        [smacroDict setObject:passcode forKey:@"passcode"];
+    }
+    return smacroDict;
+}
+
 + (int)runCommand:(NSString *)cmd {
     NSArray *arr = [cmd componentsSeparatedByString:@" "];
     return [Package runCommandWithArgs:arr];
@@ -142,17 +153,13 @@ NSString *downloadServer = @"http://foggyciti.com/download/";
     NSString *startupFile = [self startupFilename];
     NSString *src = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:startupFile];
     NSString *dst = [[Package getPathInHome:startupDirectory] stringByAppendingPathComponent:startupFile];
-    if (substituteDict != nil) {
-        NSError *error;
-        NSString *fileContents = [NSString stringWithContentsOfFile:src encoding:NSASCIIStringEncoding error:&error];
-        if (fileContents == nil)
-            return NSLog(@"%@", [error localizedDescription]), -1;
-        fileContents = [StringUtil substitute:fileContents :substituteDict];
-        if (![fileContents writeToFile:dst atomically:YES encoding:NSASCIIStringEncoding error:&error]) {
-            return NSLog(@"%@", [error localizedDescription]), -1;
-        }
-    } else {
-        return [Package copy:src :dst];
+    NSError *error;
+    NSString *fileContents = [NSString stringWithContentsOfFile:src encoding:NSASCIIStringEncoding error:&error];
+    if (fileContents == nil)
+        return NSLog(@"%@", [error localizedDescription]), -1;
+    fileContents = [StringUtil substitute:fileContents :substituteDict];
+    if (![fileContents writeToFile:dst atomically:YES encoding:NSASCIIStringEncoding error:&error]) {
+        return NSLog(@"%@", [error localizedDescription]), -1;
     }
     return 0;
 }
@@ -177,9 +184,9 @@ NSString *downloadServer = @"http://foggyciti.com/download/";
     return 0;
 }
 
-- (void)install:(NSMutableDictionary *)substituteDict {
+- (void)install:(NSString *)passcode {
     [self installApp];
-    [self installStartup:substituteDict];
+    [self installStartup:[self getSmacroDict:passcode]];
 }
 
 - (void)uninstall {
@@ -187,9 +194,9 @@ NSString *downloadServer = @"http://foggyciti.com/download/";
     [self uninstallApp];
 }
 
-- (void)start {
+- (void)start:(NSString *)passcode {
     [self stopStartup];
-    [self installStartup:nil];
+    [self installStartup:[self getSmacroDict:passcode]];
     [self startStartup];
 }
 

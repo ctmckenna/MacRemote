@@ -9,6 +9,7 @@
 #import "Installer.h"
 #include <stdlib.h>
 #import "Package/Package.h"
+#import "ServerInterface.h"
 
 @implementation Installer
 
@@ -21,10 +22,8 @@ static NSString *daemonInstalledKey = @"daemonInstalled";
     if (installed)
         return;
     Package *helper = [Package helperPackage];
-    NSMutableDictionary *smacroDict = [[NSMutableDictionary alloc] initWithCapacity:5];
-    [smacroDict setObject:[Package getPathInHome:nil] forKey:@"home"];
-    [helper install:smacroDict];
-    [helper start];
+    [helper install:[ServerInterface getPasscode]];
+    [helper start:[ServerInterface getPasscode]];
     
     [defaults setBool:YES forKey:helperInstalledKey];
     [defaults synchronize];
@@ -50,16 +49,13 @@ static NSString *daemonInstalledKey = @"daemonInstalled";
     [daemon uninstall];
 }
 
-+ (void)installDaemon:(NSString *)passcode {
++ (void)installDaemon {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     BOOL installed = [defaults boolForKey:daemonInstalledKey];
     if (installed)
         return;
     Package *daemon = [Package daemonPackage];
-    NSMutableDictionary *smacroDict = [[NSMutableDictionary alloc] initWithCapacity:5];
-    [smacroDict setObject:passcode forKey:@"passcode"];
-    [smacroDict setObject:[Package getPathInHome:nil] forKey:@"home"];
-    [daemon install:smacroDict];
+    [daemon install:[ServerInterface getPasscode]];
     
     [defaults setBool:YES forKey:daemonInstalledKey];
     [defaults synchronize];

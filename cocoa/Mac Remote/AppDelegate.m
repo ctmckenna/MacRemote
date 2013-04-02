@@ -76,7 +76,7 @@ static AppDelegate *instance = NULL;
 }
 
 - (void)install {
-    [Installer installDaemon:[ServerInterface getPasscode]];
+    [Installer installDaemon];
     [Installer installHelper];
     [self.installItem setTitle:uninstallText];
 }

@@ -49,7 +49,7 @@ typedef enum event {
 }
 
 + (void)startServer {
-    [[Package daemonPackage] start];
+    [[Package daemonPackage] start:[ServerInterface getPasscode]];
 }
 
 + (void)stopServer {

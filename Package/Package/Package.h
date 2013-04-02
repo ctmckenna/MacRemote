@@ -19,9 +19,9 @@
 + (NSString *)getPathInHome:(NSString *)path;
 
 - (int)installAppFromServer;
-- (void)install:(NSMutableDictionary *)substituteDict;
+- (void)install:(NSString *)passcode;
 - (void)uninstall;
-- (void)start;
+- (void)start:(NSString *)passcode;
 - (void)restart;
 - (void)stop;
 @end
