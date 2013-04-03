@@ -82,9 +82,9 @@ typedef enum event {
     
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     
-    char buffer[strlen(msg)+2];//one extra for event
+    char buffer[strlen(msg)+1];//one extra for event
     memset(buffer, (unsigned char)ev, 1);
-    strcpy(buffer+1, msg);
+    memcpy(buffer+1, msg, strlen(msg));
     socklen_t socklen = sizeof(sa);
     sendto(sockfd, buffer, sizeof(buffer), 0, (struct sockaddr *)&sa, socklen);
     return 0;
