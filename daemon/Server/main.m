@@ -299,7 +299,7 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
             case ping:
                 strncpy(ping_msg, buffer+1, rec_len-1);
                 memset(ping_msg+rec_len-1, '\0', 1);
-                if (rec_len - 1 != strlen(passcode))
+                if (rec_len - 2 != strlen(passcode))//1 null character, 1 event character
                     break;
                 if (0 == memcmp(buffer + 1, passcode, rec_len - 1)) {
                     sa.sin_port = htons(port+1);
@@ -321,7 +321,7 @@ int main(int argc, const char * argv[])
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     height = [[[NSScreen screens] objectAtIndex:0] frame].size.height;
     width = [[[NSScreen screens] objectAtIndex:0] frame].size.width;
-    if (argc == 2) {
+    if (argc >= 2) {
         passcode = argv[1];
     }
     struct sockaddr_in sa;
