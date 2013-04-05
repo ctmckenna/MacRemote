@@ -135,7 +135,7 @@ typedef enum event {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     code = [defaults stringForKey:passcodeKey];
     NSLog(@"code: %@ key: %@", code, passcodeKey);
-    if (code == nil) {//passcode not yet created
+    while (code == nil || [code isEqualToString:@"5363"]) {//passcode not yet created
         //4 digit number
         code = [NSString stringWithFormat:@"%d%d%d%d", arc4random()%10, arc4random()%10, arc4random()%10, arc4random()%10];
         [defaults setObject:code forKey:passcodeKey];
