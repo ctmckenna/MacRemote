@@ -27,6 +27,7 @@
 		978C5B2016CCCA8100C65EC2 /* daemon-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "daemon-Prefix.pch"; sourceTree = "<group>"; };
 		978C5B2216CCCA8100C65EC2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
 		978C5B3016CCCBA200C65EC2 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
+		97CAB9E2170C1A9C008D0CBC /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +47,7 @@
 		978C5B0316CCCA8100C65EC2 = {
 			isa = PBXGroup;
 			children = (
+				97CAB9E2170C1A9C008D0CBC /* CoreAudio.framework */,
 				978C5B3016CCCBA200C65EC2 /* ApplicationServices.framework */,
 				978C5B1816CCCA8100C65EC2 /* Server */,
 				978C5B1116CCCA8100C65EC2 /* Frameworks */,

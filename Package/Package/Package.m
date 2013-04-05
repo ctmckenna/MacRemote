@@ -26,14 +26,31 @@ NSString *downloadServer = @"http://foggyciti.com/download/";
         return home;
 }
 
-+ (int)copy:(NSString *)src :(NSString *)dst {
++ (int)prepareForCopy:(NSString *)dstFilename {
     NSFileManager *defaultManager = [NSFileManager defaultManager];
     NSError *error;
-    if (![defaultManager createDirectoryAtPath:[Package directory:dst] withIntermediateDirectories:YES attributes:nil error:&error])
+    if (![defaultManager createDirectoryAtPath:[Package directory:dstFilename] withIntermediateDirectories:YES attributes:nil error:&error])
         return NSLog(@"%@", [error localizedDescription]), -1;
-    [defaultManager removeItemAtPath:dst error:nil];
+    [defaultManager removeItemAtPath:dstFilename error:nil];
+    return 0;
+}
+
++ (int)copy:(NSString *)src :(NSString *)dst {
+    NSError *error;
+    if (0 > [Package prepareForCopy:dst])
+        return -1;
     if (![[NSFileManager defaultManager] copyItemAtPath:src toPath:dst error:&error])
         return NSLog(@"%@", [error localizedDescription]), -1;
+    return 0;
+}
+
++ (int)copyData:(NSString *)fileContents toFile:(NSString *)dst {
+    NSError *error;
+    if (0 > [Package prepareForCopy:dst])
+        return -1;
+    if (![fileContents writeToFile:dst atomically:YES encoding:NSASCIIStringEncoding error:&error]) {
+        return NSLog(@"%@", [error localizedDescription]), -1;
+    }
     return 0;
 }
 
@@ -158,9 +175,8 @@ NSString *downloadServer = @"http://foggyciti.com/download/";
     if (fileContents == nil)
         return NSLog(@"%@", [error localizedDescription]), -1;
     fileContents = [StringUtil substitute:fileContents :substituteDict];
-    if (![fileContents writeToFile:dst atomically:YES encoding:NSASCIIStringEncoding error:&error]) {
-        return NSLog(@"%@", [error localizedDescription]), -1;
-    }
+    if (0 > [Package copyData:fileContents toFile:dst])
+        return -1;
     return 0;
 }
 
