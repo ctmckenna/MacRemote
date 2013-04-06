@@ -17,6 +17,8 @@
 + (Package *)helperPackage;
 + (Package *)daemonPackage;
 + (NSString *)getPathInHome:(NSString *)path;
++ (int)runCommandWithArgs:(NSArray *)arr;
++ (int)runCommandWithArgs:(NSArray *)arr :(BOOL)async;
 
 - (int)installAppFromServer;
 - (void)install:(NSString *)passcode;

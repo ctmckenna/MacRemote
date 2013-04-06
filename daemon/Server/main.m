@@ -12,6 +12,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/time.h>
+#import "Package/Package.h"
 
 static NSInteger height;
 static NSInteger width;
@@ -39,8 +40,7 @@ typedef enum event {
     drag,
     up,
     ping,
-    code,
-    stop
+    volume
 } event_t;
 
 void speed_to_scale(float speed, float *scale)
@@ -246,10 +246,24 @@ void mouseUp()
     CFRelease(ev);
 }
 
+void set_volume(int volume_change, uint32_t timestamp)
+{
+    static NSString *setVolume = @"set volume output volume ((output volume of (get volume settings)) + %d)";
+    static NSMutableArray *cmd = nil;
+    if (cmd == nil)
+        cmd = [[NSMutableArray alloc] initWithObjects:@"/usr/bin/osascript", @"-e", nil];
+    [cmd addObject:[NSString stringWithFormat:setVolume, volume_change]];
+    [Package runCommandWithArgs:cmd];
+    [cmd removeObjectAtIndex:[cmd count]-1];
+    NSSound *sound = [NSSound soundNamed:@"volume"];
+    [sound play];
+}
+
 int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
     char buffer[512];
     size_t buf_len = sizeof(buffer);
     ssize_t rec_len;
+    int volume_change;
     int x_i;
     int y_i;
     float x;
@@ -257,7 +271,6 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
     uint32_t timestamp;
     char ping_msg[255];
     static bool is_dragging = false;
-    static bool stopped = false;
     while (true) {
         rec_len = recvfrom(sockfd, buffer, buf_len, 0, (struct sockaddr *)&sa, &socklen);
         if (rec_len < 0) {
@@ -267,14 +280,12 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
         if (rec_len < 1)
             continue;
         char ev = buffer[0];
-        if (stopped && ev != code)
-            continue;
         switch(ev) {
             case click:
                 mouseClick();
                 break;
             case move:
-                if (buf_len < 13)continue;
+                if (rec_len < 13)continue;
                 x_i = (int)ntohl(*(uint32_t *)(buffer+1));
                 y_i = (int)ntohl(*(uint32_t *)(buffer+5));
                 timestamp = (uint32_t)ntohl(*(uint32_t *)(buffer + 9));
@@ -283,7 +294,7 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
                 mouseMove(x, y, timestamp);
                 break;
             case drag:
-                if (buf_len < 13) continue;
+                if (rec_len < 13) continue;
                 x_i = (int)ntohl(*(uint32_t *)(buffer+1));
                 y_i = (int)ntohl(*(uint32_t *)(buffer+5));
                 timestamp = (uint32_t)ntohl(*(uint32_t *)(buffer + 9));
@@ -306,8 +317,11 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
                     sendto(sockfd, ping_resp, ping_resp_len, 0, (struct sockaddr *)&sa, socklen);
                 }
                 break;
-            case stop:
-                stopped = true;
+            case volume:
+                if (rec_len < 5) continue;
+                volume_change = (int)ntohl(*(uint32_t *)(buffer + 1));
+                timestamp = (uint32_t)ntohl(*(uint32_t *)(buffer + 5));
+                set_volume(volume_change, timestamp);
                 break;
             default:
                 continue;

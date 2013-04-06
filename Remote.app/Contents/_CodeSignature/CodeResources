@@ -18,7 +18,7 @@
 		</data>
 		<key>Resources/daemon.app/Contents/MacOS/daemon</key>
 		<data>
-		MgpYgJGPuGb/Zinem4VO2slDafE=
+		Z1LXtAKuBpn2zifRgvhuaBeRSEU=
 		</data>
 		<key>Resources/daemon.app/Contents/PkgInfo</key>
 		<data>
@@ -42,9 +42,13 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>Resources/daemon.app/Contents/Resources/volume.aiff</key>
+		<data>
+		QVJhMVqlVsO8QRIu87KoKqgIr24=
+		</data>
 		<key>Resources/daemon.app/Contents/_CodeSignature/CodeResources</key>
 		<data>
-		4/SfZj+HA7FK4NWlyl9BJhhNiMc=
+		Y+2Qv7MjAWkbrkTfvSlaV2pPE+Y=
 		</data>
 		<key>Resources/en.lproj/Credits.rtf</key>
 		<dict>
@@ -79,7 +83,7 @@
 		</data>
 		<key>Resources/helper.app/Contents/MacOS/helper</key>
 		<data>
-		eI8IJThbJC4XbWTSZf0BDir48w0=
+		oTNVp+k1ymSvXycthbVVj1ZD8No=
 		</data>
 		<key>Resources/helper.app/Contents/PkgInfo</key>
 		<data>

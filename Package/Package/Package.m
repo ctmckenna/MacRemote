@@ -122,12 +122,18 @@ NSString *downloadServer = @"http://foggyciti.com/download/";
 }
 
 + (int)runCommandWithArgs:(NSArray *)arr {
+    return [Package runCommandWithArgs:arr :NO];
+}
+
++ (int)runCommandWithArgs:(NSArray *)arr :(BOOL)async {
     NSString *path = [arr objectAtIndex:0];
     NSArray *args = [arr subarrayWithRange:NSMakeRange(1, [arr count]-1)];
     NSTask *task = [[NSTask alloc] init];
     [task setLaunchPath:path];
     [task setArguments:args];
     [task launch];
+    if (async)
+        return 0;
     [task waitUntilExit];
     return [task terminationStatus];
 }
