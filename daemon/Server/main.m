@@ -13,6 +13,7 @@
 #include <netinet/in.h>
 #include <sys/time.h>
 #import "Package/Package.h"
+#include <pthread.h>
 
 static NSInteger height;
 static NSInteger width;
@@ -22,6 +23,8 @@ static const char *ping_resp = ":-)";
 static const size_t ping_resp_len = 3;
 
 static const char *passcode = "";
+
+#define MOVE_LEN (sizeof(char) + sizeof(int) + sizeof(int) + sizeof(int))
 
 /*
  void PostMouseEvent(CGMouseButton button, CGEventType type, const CGPoint point) {
@@ -34,14 +37,26 @@ static const char *passcode = "";
 #define ROLL_SIZE 5
 #define MIN_COLLECT_TIME 20
 
+//static bool stop_thread = false;
+
 typedef enum event {
     click = 1,
     move,
     drag,
     up,
     ping,
-    volume
+    volume,
+    scroll
 } event_t;
+
+struct scroll_data {
+    float x;
+    float y;
+    uint32_t ts;
+    uint32_t id;
+};
+
+static struct scroll_data scroll_data;
 
 void speed_to_scale(float speed, float *scale)
 {
@@ -55,67 +70,36 @@ void speed_to_scale(float speed, float *scale)
         *scale = min_scale;
 }
 
-/*void smooth_delta(float *d_x, float *d_y, float *dist, uint32_t d_time)
- {
- static int head = 0;
- static float rolling_speeds[ROLL_SIZE];
- static float sum = 0;
- static bool speeds_initialized = false;
- if (speeds_initialized == false) {
- init_speeds(rolling_speeds, &sum);
- speeds_initialized = true;
- }
- float popped_speed = pop_head(rolling_speeds, &head);
- float new_speed = *dist / d_time;
- insert_tail(rolling_speeds, head, new_speed);
- sum -= popped_speed;
- sum += new_speed;
- float new_dist = (sum / ROLL_SIZE) * d_time;
- float slope = *d_y / (*d_x == 0 ? .001 : *d_x);
- if (slope < 0) slope *= -1;
- float new_x = sqrtf((new_dist * new_dist) / (1 + (slope * slope)));
- float new_y = new_x * slope;
- 
- *d_x = *d_x >= 0 ? new_x : new_x * -1;
- *d_y = *d_y >= 0 ? new_y : new_y * -1;
- *dist = new_dist;
- }*/
-
-int scale_delta(float *d_x, float *d_y, uint32_t ts)
+int get_speed(float *d_x, float *d_y, uint32_t ts, float *speed)
 {
     /* milliseconds since 1970 */
     static uint32_t last_time = 0;
-    static float max_distance = 0;
-    float scale;
-   // struct timeval tv;
-   // if (0 > gettimeofday(&tv, NULL))
-   //     return -1;
-   // uint32_t millis = (uint32_t)tv.tv_sec * 1000 + tv.tv_usec/1000;
     if (0 == last_time) {
         last_time = ts;
         return -1;
     }
     uint32_t d_time = ts - last_time;
-    //printf("t: %u\n", d_time);
     if (0 == d_time)
         return -1;
     
     float dist = sqrt(*d_x * *d_x + *d_y * *d_y);
     
-    if (dist > max_distance)
-        max_distance = dist;
-    //printf("dist: %f MAX: %f\n", dist, max_distance);
-    float speed = dist/d_time;
-    //printf("before: speed: %f time: %u x: %f y: %f\n", speed, d_time, *d_x, *d_y);
-    //smooth_delta(d_x, d_y, &dist, d_time);
-    //printf("speed: %f time: %u x: %f y: %f\n", speed, d_time, *d_x, *d_y);
-    //float speed = dist / d_time;
-    speed_to_scale(speed, &scale);
+    *speed = dist/d_time;
     last_time = ts;
+    return 0;
+    
+}
+
+int scale_delta(float *d_x, float *d_y, uint32_t ts)
+{
+    float scale;
+    float speed;
+    if (0 > get_speed(d_x, d_y, ts, &speed))
+        return -1;
+    speed_to_scale(speed, &scale);
     
     *d_x = *d_x * scale;
     *d_y = *d_y * scale;
-    //printf("new delta: x: %f y: %f\n", *d_x, *d_y);
     return 0;
 }
 
@@ -187,6 +171,29 @@ int getNewPoint(float x, float y, CGPoint *newPt, uint32_t ts)
     return 0;
 }
 
+int getScrollDelta(float x, float y, uint32_t ts, int32_t *scroll_x, int32_t *scroll_y)
+{
+    static const float MAX_DELTA = 10;
+    static const float MAX_SCROLL = 50;
+    if (0 > scale_delta(&x, &y, ts))
+        return -1;
+    printf("x: %f\t y: %f\n", x, y);
+    x = x / MAX_DELTA;
+    if (x > 1)
+        x = 1;
+    if (x < -1)
+        x = -1;
+    y = y / MAX_DELTA;
+    if (y > 1)
+        y = 1;
+    if (y < -1)
+        y = -1;
+    
+    *scroll_x = x * MAX_SCROLL;
+    *scroll_y = y * MAX_SCROLL;
+    return 0;
+}
+
 void getCurPoint(CGPoint *pt) {
     NSPoint curPt = [NSEvent mouseLocation];
     pt->x = curPt.x;
@@ -226,6 +233,29 @@ void mouseDrag(float x, float y, bool is_dragging, uint32_t ts)
     CFRelease(ev);
 }
 
+void mouseScroll(struct scroll_data scroll_data)
+{
+    /*static const int SLEEP_MILLIS = 25;
+    struct timespec ts;
+    ts.tv_nsec = SLEEP_MILLIS * 1000;
+    ts.tv_sec = 0;*/
+    int scroll_x = 0;
+    int scroll_y = 0;
+    /*uint32_t last_id = scroll_data.id;
+    while (true) {
+        nanosleep(&ts, NULL);
+        if (last_id == scroll_data.id)
+            continue;
+        last_id = scroll_data.id;*/
+        if (0 > getScrollDelta(scroll_data.x, scroll_data.y, scroll_data.ts, &scroll_x, &scroll_y))
+            return;
+        printf("scroll: [x: %d] [y: %d]\n", scroll_x, scroll_y);
+        CGEventRef ev = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitPixel, 2, scroll_y, scroll_x);
+        CGEventPost(kCGHIDEventTap, ev);
+        CFRelease(ev);
+ //   }
+}
+
 void mouseClick()
 {
     NSPoint curPt = [NSEvent mouseLocation];
@@ -259,18 +289,28 @@ void set_volume(int volume_change, uint32_t timestamp)
     [sound play];
 }
 
+void parse_move_buf(char *buffer, float *x, float *y, uint32_t *timestamp) {
+    int x_i = (int)ntohl(*(uint32_t *)(buffer+1));
+    int y_i = (int)ntohl(*(uint32_t *)(buffer+5));
+    *timestamp = (uint32_t)ntohl(*(uint32_t *)(buffer + 9));
+    *x = (float)x_i / 1000.0;
+    *y =  (float)y_i / 1000.0;
+}
+
+
+
 int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
     char buffer[512];
     size_t buf_len = sizeof(buffer);
     ssize_t rec_len;
     int volume_change;
-    int x_i;
-    int y_i;
     float x;
     float y;
     uint32_t timestamp;
     char ping_msg[255];
     static bool is_dragging = false;
+   // pthread_t scroll_thread;
+   // pthread_create(&scroll_thread, NULL, &mouseScroll, NULL);
     while (true) {
         rec_len = recvfrom(sockfd, buffer, buf_len, 0, (struct sockaddr *)&sa, &socklen);
         if (rec_len < 0) {
@@ -285,21 +325,13 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
                 mouseClick();
                 break;
             case move:
-                if (rec_len < 13)continue;
-                x_i = (int)ntohl(*(uint32_t *)(buffer+1));
-                y_i = (int)ntohl(*(uint32_t *)(buffer+5));
-                timestamp = (uint32_t)ntohl(*(uint32_t *)(buffer + 9));
-                x = (float)x_i / 1000.0;
-                y =  (float)y_i / 1000.0;
+                if (rec_len < MOVE_LEN)continue;
+                parse_move_buf(buffer, &x, &y, &timestamp);
                 mouseMove(x, y, timestamp);
                 break;
             case drag:
-                if (rec_len < 13) continue;
-                x_i = (int)ntohl(*(uint32_t *)(buffer+1));
-                y_i = (int)ntohl(*(uint32_t *)(buffer+5));
-                timestamp = (uint32_t)ntohl(*(uint32_t *)(buffer + 9));
-                x = (float)x_i / 1000.0;
-                y =  (float)y_i / 1000.0;
+                if (rec_len < MOVE_LEN) continue;
+                parse_move_buf(buffer, &x, &y, &timestamp);
                 mouseDrag(x, y, is_dragging, timestamp);
                 is_dragging = true;
                 break;
@@ -323,6 +355,11 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
                 timestamp = (uint32_t)ntohl(*(uint32_t *)(buffer + 5));
                 set_volume(volume_change, timestamp);
                 break;
+            case scroll:
+                if (rec_len < MOVE_LEN) continue;
+                parse_move_buf(buffer, &scroll_data.x, &scroll_data.y, &scroll_data.ts);
+                mouseScroll(scroll_data);
+                //scroll_data.id += 1;
             default:
                 continue;
         }
