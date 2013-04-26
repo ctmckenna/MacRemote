@@ -14,6 +14,8 @@
 #include <sys/time.h>
 #import "Package/Package.h"
 #include <pthread.h>
+#include "utils.h"
+#include <sys/event.h>
 
 static NSInteger height;
 static NSInteger width;
@@ -23,6 +25,8 @@ static const char *ping_resp = ":-)";
 static const size_t ping_resp_len = 3;
 
 static const char *passcode = "";
+
+#define EPSILON (.0001)
 
 #define MOVE_LEN (sizeof(char) + sizeof(int) + sizeof(int) + sizeof(int))
 
@@ -37,8 +41,6 @@ static const char *passcode = "";
 #define ROLL_SIZE 5
 #define MIN_COLLECT_TIME 20
 
-//static bool stop_thread = false;
-
 typedef enum event {
     click = 1,
     move,
@@ -49,19 +51,26 @@ typedef enum event {
     scroll
 } event_t;
 
+typedef enum direction {
+    UP,
+    DOWN,
+    RIGHT,
+    LEFT
+} direction_t;
+
 struct scroll_data {
     float x;
     float y;
     uint32_t ts;
-    uint32_t id;
+    uint32_t data_id;
 };
 
 static struct scroll_data scroll_data;
 
 void speed_to_scale(float speed, float *scale)
 {
-    static float max_speed = 4;
-    static float max_scale = 5;
+    static float max_speed = 8;
+    static float max_scale = 15;
     static float min_scale = 1;
     
     float frac = speed >= max_speed ? 1 : speed/max_speed;
@@ -82,7 +91,7 @@ int get_speed(float *d_x, float *d_y, uint32_t ts, float *speed)
     if (0 == d_time)
         return -1;
     
-    float dist = sqrt(*d_x * *d_x + *d_y * *d_y);
+    float dist = distance(*d_x, *d_y);
     
     *speed = dist/d_time;
     last_time = ts;
@@ -171,29 +180,6 @@ int getNewPoint(float x, float y, CGPoint *newPt, uint32_t ts)
     return 0;
 }
 
-int getScrollDelta(float x, float y, uint32_t ts, int32_t *scroll_x, int32_t *scroll_y)
-{
-    static const float MAX_DELTA = 10;
-    static const float MAX_SCROLL = 50;
-    if (0 > scale_delta(&x, &y, ts))
-        return -1;
-    printf("x: %f\t y: %f\n", x, y);
-    x = x / MAX_DELTA;
-    if (x > 1)
-        x = 1;
-    if (x < -1)
-        x = -1;
-    y = y / MAX_DELTA;
-    if (y > 1)
-        y = 1;
-    if (y < -1)
-        y = -1;
-    
-    *scroll_x = x * MAX_SCROLL;
-    *scroll_y = y * MAX_SCROLL;
-    return 0;
-}
-
 void getCurPoint(CGPoint *pt) {
     NSPoint curPt = [NSEvent mouseLocation];
     pt->x = curPt.x;
@@ -233,27 +219,130 @@ void mouseDrag(float x, float y, bool is_dragging, uint32_t ts)
     CFRelease(ev);
 }
 
-void mouseScroll(struct scroll_data scroll_data)
+void postScroll(int scroll_x, int scroll_y)
 {
-    /*static const int SLEEP_MILLIS = 25;
+   // printf("scroll: [x: %d] [y: %d]\n", scroll_x, scroll_y);
+    CGEventRef ev = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitPixel, 2, scroll_y, scroll_x);
+    CGEventPost(kCGHIDEventTap, ev);
+    CFRelease(ev);
+}
+
+void server_sleep(long millis)
+{
     struct timespec ts;
-    ts.tv_nsec = SLEEP_MILLIS * 1000;
-    ts.tv_sec = 0;*/
-    int scroll_x = 0;
-    int scroll_y = 0;
-    /*uint32_t last_id = scroll_data.id;
+    size_t nanoseconds = millis * 1000000;
+    ts.tv_nsec = nanoseconds % 1000000000;
+    ts.tv_sec = nanoseconds  / 1000000000;
+    nanosleep(&ts, NULL);
+}
+
+void adjust_speed(double distance_traveled, double friction, double *speed)
+{
+    double c = sqrt((*speed * *speed) - (2 * distance_traveled * friction));
+    double time = ((*speed * -1) + c) / (friction * -1);
+    *speed = *speed - (time * friction);
+}
+
+double get_distance_traveled(double speed, double friction, time_t time, bool *hit_end)
+{
+    time_t time_left = speed / friction;
+    if (time_left < time) {
+        *hit_end = true;
+        time = time_left;
+    }
+    return (time * speed) - (0.5 * (time * time) * friction);
+}
+
+direction_t get_direction(struct scroll_data sd)
+{
+    direction_t direction = UP;
+    if (sd.y < 0)
+        direction = DOWN;
+    else if (sd.x > 0)
+        direction = RIGHT;
+    else if (sd.x < 0)
+        direction = LEFT;
+    return direction;
+}
+
+struct scroll_data get_data_diff(struct scroll_data shared_data, struct scroll_data *local_data)
+{
+    struct scroll_data actionable_data;
+    float x = shared_data.x - local_data->x;
+    float y = shared_data.y - local_data->y;
+    if (x * x > y * y) {
+        actionable_data.x = x;
+        actionable_data.y = 0;
+    } else {
+        actionable_data.x = 0;
+        actionable_data.y = y;
+    }
+    actionable_data.ts = shared_data.ts;
+    actionable_data.data_id = shared_data.data_id;
+    
+    local_data->x = shared_data.x;
+    local_data->y = shared_data.y;
+    local_data->ts = shared_data.ts;
+    local_data->data_id = shared_data.data_id;
+    return actionable_data;
+}
+
+/*
+ speed is units per second
+ */
+void *mouseScroll(void *ptr)
+{
+    static const double FRICTION = ((double)1 / (double)120);        // units of velocity lost per second
+    static const double SPEED_FACTOR = 5;
+    int fd = *(int *)ptr;
+    long res;
+    uint8_t t;
+    double speed = 0;
+    time_t last_time = 0;
+    struct scroll_data data_buf;
+    memset(&data_buf, 0, sizeof(data_buf));
     while (true) {
-        nanosleep(&ts, NULL);
-        if (last_id == scroll_data.id)
+        if (0 >= (res = read(fd, &t, sizeof(t))))
             continue;
-        last_id = scroll_data.id;*/
-        if (0 > getScrollDelta(scroll_data.x, scroll_data.y, scroll_data.ts, &scroll_x, &scroll_y))
-            return;
-        printf("scroll: [x: %d] [y: %d]\n", scroll_x, scroll_y);
-        CGEventRef ev = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitPixel, 2, scroll_y, scroll_x);
-        CGEventPost(kCGHIDEventTap, ev);
-        CFRelease(ev);
- //   }
+        last_time = data_buf.ts;
+        struct scroll_data new_data = get_data_diff(scroll_data, &data_buf);
+        if (new_data.x == 0 && new_data.y == 0)
+            continue;
+        //printf("x: %f y: %f t: %ld\n", new_data.x, new_data.y, new_data.ts - last_time);
+        speed = (distance(new_data.x, new_data.y) / (new_data.ts - last_time)) * SPEED_FACTOR;
+        //printf("speed: %f\n", speed);
+        direction_t direction = get_direction(new_data);
+        time_t post_sleep = millis_since_epoch();
+        time_t pre_sleep = post_sleep - 35;
+        bool hit_end = false;
+        while (speed > EPSILON) {
+            int distance_traveled = (int)get_distance_traveled(speed, FRICTION, post_sleep - pre_sleep, &hit_end);
+            //printf("distance traveled: %d sleep: %ld\n", distance_traveled, post_sleep - pre_sleep);
+            if (hit_end && distance_traveled <= 0)
+                break;
+            switch (direction) {
+                case UP:
+                    postScroll(0, distance_traveled);
+                    break;
+                case DOWN:
+                    postScroll(0, distance_traveled * -1);
+                    break;
+                case LEFT:
+                    postScroll(distance_traveled * -1, 0);
+                    break;
+                case RIGHT:
+                    postScroll(distance_traveled, 0);
+                    break;
+            }
+            if (scroll_data.data_id != new_data.data_id)
+                break;
+            pre_sleep = post_sleep;
+            adjust_speed(distance_traveled, FRICTION, &speed);
+            server_sleep(25);
+            post_sleep = millis_since_epoch();
+            
+        }
+    }
 }
 
 void mouseClick()
@@ -297,7 +386,16 @@ void parse_move_buf(char *buffer, float *x, float *y, uint32_t *timestamp) {
     *y =  (float)y_i / 1000.0;
 }
 
-
+void check_kill_scroll(char ev, uint32_t timestamp) {
+    switch(ev) {
+        case click:
+        case move:
+        case drag:
+            if (timestamp - scroll_data.ts > 600)
+                scroll_data.data_id += 1;
+            break;
+    }
+}
 
 int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
     char buffer[512];
@@ -309,8 +407,12 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
     uint32_t timestamp;
     char ping_msg[255];
     static bool is_dragging = false;
-   // pthread_t scroll_thread;
-   // pthread_create(&scroll_thread, NULL, &mouseScroll, NULL);
+    pthread_t scroll_thread;
+    uint8_t t = 0;
+    static int scroll_pipe[2] = {-1, -1};
+    if (0 > pipe(scroll_pipe))
+        return -1;
+    pthread_create(&scroll_thread, NULL, &mouseScroll, &scroll_pipe[0]);
     while (true) {
         rec_len = recvfrom(sockfd, buffer, buf_len, 0, (struct sockaddr *)&sa, &socklen);
         if (rec_len < 0) {
@@ -322,15 +424,18 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
         char ev = buffer[0];
         switch(ev) {
             case click:
+                scroll_data.data_id += 1;
                 mouseClick();
                 break;
             case move:
                 if (rec_len < MOVE_LEN)continue;
+                scroll_data.data_id += 1;
                 parse_move_buf(buffer, &x, &y, &timestamp);
                 mouseMove(x, y, timestamp);
                 break;
             case drag:
                 if (rec_len < MOVE_LEN) continue;
+                scroll_data.data_id += 1;
                 parse_move_buf(buffer, &x, &y, &timestamp);
                 mouseDrag(x, y, is_dragging, timestamp);
                 is_dragging = true;
@@ -355,14 +460,18 @@ int handle_events(int sockfd, socklen_t socklen, struct sockaddr_in sa) {
                 timestamp = (uint32_t)ntohl(*(uint32_t *)(buffer + 5));
                 set_volume(volume_change, timestamp);
                 break;
-            case scroll:
+            case scroll: 
                 if (rec_len < MOVE_LEN) continue;
-                parse_move_buf(buffer, &scroll_data.x, &scroll_data.y, &scroll_data.ts);
-                mouseScroll(scroll_data);
-                //scroll_data.id += 1;
+                parse_move_buf(buffer, &x, &y, &timestamp);
+                scroll_data.x += x;
+                scroll_data.y += y;
+                scroll_data.ts = timestamp;
+                scroll_data.data_id += 1;
+                write(scroll_pipe[1], &t, sizeof(t));
             default:
                 continue;
         }
+        check_kill_scroll(ev, timestamp);
     }
     return 0;
 }

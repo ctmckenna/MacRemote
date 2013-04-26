@@ -18,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		970D9BE41723E49C00352EC6 /* utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		978C5B0E16CCCA8100C65EC2 /* daemon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = daemon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		978C5B1216CCCA8100C65EC2 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		978C5B1516CCCA8100C65EC2 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -103,6 +104,7 @@
 				978C5B1A16CCCA8100C65EC2 /* daemon-Info.plist */,
 				978C5B1B16CCCA8100C65EC2 /* InfoPlist.strings */,
 				978C5B1E16CCCA8100C65EC2 /* main.m */,
+				970D9BE41723E49C00352EC6 /* utils.h */,
 				978C5B2016CCCA8100C65EC2 /* daemon-Prefix.pch */,
 				978C5B2116CCCA8100C65EC2 /* Credits.rtf */,
 			);
